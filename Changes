@@ -1,5 +1,9 @@
 
 
+v0.002    2010-07-12
+  - Added $SIG{ALRM} handler to prevent hanging on slow/invalid domains.
+  - Removed some warnings.
+
 v0.001    2010-07-12
   - Initial release.
   - Works just fine as far as I can tell.  

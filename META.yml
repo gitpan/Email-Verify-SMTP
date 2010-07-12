@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name:                Email-Verify-SMTP
-version:             0.001
+version:             0.002
 abstract:            Verify an email address by using SMTP.
 license:             ~
 author:              

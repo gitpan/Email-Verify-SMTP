@@ -9,20 +9,26 @@ use IO::Socket::Telnet;
 use Carp 'confess';
 
 our @EXPORT = ('verify_email');
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 
 sub verify_email
 {
-  my $email = shift;
+  my $email = shift or return;
 
   my (undef, $domain) = split /@/, $email;
-  my ($mx) = nslookup(domain => $domain, type => "MX");
+  return unless $domain;
+  my ($mx) = nslookup(domain => $domain, type => "MX")
+    or return;
   my $t = IO::Socket::Telnet->new(
     PeerAddr => $mx,
     PeerPort => 25,
   ) or confess "Cannot open socket to '$mx': $!";
 
+  local $SIG{ALRM} = sub {
+    confess "Timeout on email '$email'";
+  };
+  alarm(4);
   my $res = eval {
     $t->send("helo hi\n");
     $t->recv(my $res, 4096) or die "Error: $!";
@@ -35,6 +41,7 @@ sub verify_email
     
     $res;
   };
+  alarm(0);
   
   $t->close;
   confess $@ if $@;
